@@ -1,1 +1,233 @@
-{"sub":[{"n_clashes":99,"group":"FIRE","date":"2015-09-01"},{"group":"FIRE","date":"2015-09-02","n_clashes":92},{"group":"FIRE","date":"2015-09-03","n_clashes":98},{"n_clashes":98,"group":"FIRE","date":"2015-09-04"},{"n_clashes":96,"group":"FIRE","date":"2015-09-05"},{"date":"2015-09-01","group":"MECH","n_clashes":72},{"n_clashes":72,"date":"2015-09-02","group":"MECH"},{"date":"2015-09-03","group":"MECH","n_clashes":64},{"date":"2015-09-04","group":"MECH","n_clashes":62},{"n_clashes":64,"date":"2015-09-05","group":"MECH"},{"date":"2015-09-01","group":"DUCT","n_clashes":24},{"date":"2015-09-02","group":"DUCT","n_clashes":22},{"n_clashes":18,"date":"2015-09-03","group":"DUCT"},{"group":"DUCT","date":"2015-09-04","n_clashes":21},{"date":"2015-09-05","group":"DUCT","n_clashes":22}],"level":[{"group":"0","date":"2015-09-01","n_clashes":42},{"n_clashes":48,"date":"2015-09-02","group":"0"},{"n_clashes":50,"group":"0","date":"2015-09-03"},{"n_clashes":49,"date":"2015-09-04","group":"0"},{"n_clashes":50,"date":"2015-09-05","group":"0"},{"n_clashes":94,"group":"1","date":"2015-09-01"},{"n_clashes":86,"group":"1","date":"2015-09-02"},{"n_clashes":94,"group":"1","date":"2015-09-03"},{"date":"2015-09-04","group":"1","n_clashes":89},{"group":"1","date":"2015-09-05","n_clashes":85},{"n_clashes":113,"group":"2","date":"2015-09-01"},{"date":"2015-09-02","group":"2","n_clashes":103},{"date":"2015-09-03","group":"2","n_clashes":102},{"n_clashes":98,"group":"2","date":"2015-09-04"},{"group":"2","date":"2015-09-05","n_clashes":101},{"date":"2015-09-01","group":"3","n_clashes":29},{"n_clashes":23,"date":"2015-09-02","group":"3"},{"date":"2015-09-03","group":"3","n_clashes":24},{"n_clashes":17,"group":"3","date":"2015-09-04"},{"group":"3","date":"2015-09-05","n_clashes":12}],"author":[{"date":"2015-09-01","group":"Bechtel","n_clashes":56},{"n_clashes":53,"group":"Bechtel","date":"2015-09-02"},{"group":"Bechtel","date":"2015-09-03","n_clashes":52},{"n_clashes":54,"date":"2015-09-04","group":"Bechtel"},{"n_clashes":56,"date":"2015-09-05","group":"Bechtel"},{"n_clashes":90,"date":"2015-09-01","group":"Vinci"},{"n_clashes":86,"group":"Vinci","date":"2015-09-02"},{"date":"2015-09-03","group":"Vinci","n_clashes":76},{"n_clashes":70,"date":"2015-09-04","group":"Vinci"},{"group":"Vinci","date":"2015-09-05","n_clashes":66}]}
+{
+  "sub": [
+    {
+      "n_clashes": 99,
+      "group": "FIRE",
+      "date": "2015-09-01"
+    },
+    {
+      "group": "FIRE",
+      "date": "2015-09-02",
+      "n_clashes": 92
+    },
+    {
+      "group": "FIRE",
+      "date": "2015-09-03",
+      "n_clashes": 98
+    },
+    {
+      "n_clashes": 98,
+      "group": "FIRE",
+      "date": "2015-09-04"
+    },
+    {
+      "n_clashes": 96,
+      "group": "FIRE",
+      "date": "2015-09-05"
+    },
+    {
+      "date": "2015-09-01",
+      "group": "MECH",
+      "n_clashes": 72
+    },
+    {
+      "n_clashes": 72,
+      "date": "2015-09-02",
+      "group": "MECH"
+    },
+    {
+      "date": "2015-09-03",
+      "group": "MECH",
+      "n_clashes": 64
+    },
+    {
+      "date": "2015-09-04",
+      "group": "MECH",
+      "n_clashes": 62
+    },
+    {
+      "n_clashes": 64,
+      "date": "2015-09-05",
+      "group": "MECH"
+    },
+    {
+      "date": "2015-09-01",
+      "group": "DUCT",
+      "n_clashes": 24
+    },
+    {
+      "date": "2015-09-02",
+      "group": "DUCT",
+      "n_clashes": 22
+    },
+    {
+      "n_clashes": 18,
+      "date": "2015-09-03",
+      "group": "DUCT"
+    },
+    {
+      "group": "DUCT",
+      "date": "2015-09-04",
+      "n_clashes": 21
+    },
+    {
+      "date": "2015-09-05",
+      "group": "DUCT",
+      "n_clashes": 22
+    }
+  ],
+  "level": [
+    {
+      "group": "0",
+      "date": "2015-09-01",
+      "n_clashes": 42
+    },
+    {
+      "n_clashes": 48,
+      "date": "2015-09-02",
+      "group": "0"
+    },
+    {
+      "n_clashes": 50,
+      "group": "0",
+      "date": "2015-09-03"
+    },
+    {
+      "n_clashes": 49,
+      "date": "2015-09-04",
+      "group": "0"
+    },
+    {
+      "n_clashes": 50,
+      "date": "2015-09-05",
+      "group": "0"
+    },
+    {
+      "n_clashes": 94,
+      "group": "1",
+      "date": "2015-09-01"
+    },
+    {
+      "n_clashes": 86,
+      "group": "1",
+      "date": "2015-09-02"
+    },
+    {
+      "n_clashes": 94,
+      "group": "1",
+      "date": "2015-09-03"
+    },
+    {
+      "date": "2015-09-04",
+      "group": "1",
+      "n_clashes": 89
+    },
+    {
+      "group": "1",
+      "date": "2015-09-05",
+      "n_clashes": 85
+    },
+    {
+      "n_clashes": 113,
+      "group": "2",
+      "date": "2015-09-01"
+    },
+    {
+      "date": "2015-09-02",
+      "group": "2",
+      "n_clashes": 103
+    },
+    {
+      "date": "2015-09-03",
+      "group": "2",
+      "n_clashes": 102
+    },
+    {
+      "n_clashes": 98,
+      "group": "2",
+      "date": "2015-09-04"
+    },
+    {
+      "group": "2",
+      "date": "2015-09-05",
+      "n_clashes": 101
+    },
+    {
+      "date": "2015-09-01",
+      "group": "3",
+      "n_clashes": 29
+    },
+    {
+      "n_clashes": 23,
+      "date": "2015-09-02",
+      "group": "3"
+    },
+    {
+      "date": "2015-09-03",
+      "group": "3",
+      "n_clashes": 24
+    },
+    {
+      "n_clashes": 17,
+      "group": "3",
+      "date": "2015-09-04"
+    },
+    {
+      "group": "3",
+      "date": "2015-09-05",
+      "n_clashes": 12
+    }
+  ],
+  "author": [
+    {
+      "date": "2015-09-01",
+      "group": "Bechtel",
+      "n_clashes": 56
+    },
+    {
+      "n_clashes": 53,
+      "group": "Bechtel",
+      "date": "2015-09-02"
+    },
+    {
+      "group": "Bechtel",
+      "date": "2015-09-03",
+      "n_clashes": 52
+    },
+    {
+      "n_clashes": 54,
+      "date": "2015-09-04",
+      "group": "Bechtel"
+    },
+    {
+      "n_clashes": 56,
+      "date": "2015-09-05",
+      "group": "Bechtel"
+    },
+    {
+      "n_clashes": 90,
+      "date": "2015-09-01",
+      "group": "Vinci"
+    },
+    {
+      "n_clashes": 86,
+      "group": "Vinci",
+      "date": "2015-09-02"
+    },
+    {
+      "date": "2015-09-03",
+      "group": "Vinci",
+      "n_clashes": 76
+    },
+    {
+      "n_clashes": 70,
+      "date": "2015-09-04",
+      "group": "Vinci"
+    },
+    {
+      "group": "Vinci",
+      "date": "2015-09-05",
+      "n_clashes": 66
+    }
+  ]
+}

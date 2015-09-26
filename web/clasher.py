@@ -3,6 +3,8 @@ import urllib2
 import gzip
 import StringIO
 
+
+
 class Clasher(object):
     def __init__(self, url):
         if url.endswith('.gz'):

@@ -1,1 +1,1 @@
-web: gunicorn --pythonpath web url:app --log-file=-
+web: gunicorn  --log-level=debug --logger-class=simple --pythonpath web url:app --log-file=- 

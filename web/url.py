@@ -50,6 +50,7 @@ def hello(name=None):
 
 
 @app.route('/time')
+@app.route('/time/')
 def time_series():
     data_url = '/static/test-data.json'
     return render_template('clash-summary-over-time.html', data_url=data_url)

@@ -2,7 +2,7 @@ from flask import Flask, render_template, jsonify, redirect, url_for
 from web.clasher import Clasher
 import os
 
-xml_file = 'https://s3.amazonaws.com/navishack/PC-00-COMP-BBC.xml.gz'
+xml_file = 'PC-00-COMP-BBC.xml.gz'
 clash_data = None
 
 app = Flask(__name__)

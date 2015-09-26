@@ -9,3 +9,7 @@ To run type
 
 For heroku
   heroku local
+
+
+Sample file:
+https://s3.amazonaws.com/navishack/PC-00-COMP-BBC.xml

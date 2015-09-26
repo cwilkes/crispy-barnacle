@@ -1,15 +1,15 @@
-<!doctype html> 
-<html> 
-<head>  <title>Clashes over time</title>  {% include 'head.html' %} </head>
- 
-<body>  <p id="description">  High-level, day-over-day clashes over time. </p>
+<!doctype html>
+<html>
+<head> <title>Clashes over time</title> {% include 'head.html' %}</head>
 
-<div id="data_url" hidden="true">{{ data_url }}</div>
+<body><p id="description"> High-level, day-over-day clashes over time.</p>
 
-  <select id="grouping"> </select>  
-<div id="plot"> </div>
-   
-<script src="{{ url_for('static', filename='clash-summary-over-time.js')}}"></script>
+<div id="data_url" hidden="true">test-data.json</div>
+
+<select id="grouping"></select>
+<div id="plot"></div>
+
+<script src="/static/clash-summary-over-time.js"></script>
 </body>
-   
-</html> 
+
+</html>

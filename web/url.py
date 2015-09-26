@@ -2,9 +2,8 @@ from flask import Flask, render_template, jsonify, redirect, url_for
 from web.clasher import Clasher
 import os
 
-#xml_file = 'https://s3.amazonaws.com/navishack/PC-00-COMP-BBC.xml.gz'
-#clash_data = Clasher(xml_file)
-
+xml_file = 'https://s3.amazonaws.com/navishack/PC-00-COMP-BBC.xml.gz'
+clash_data = None
 
 app = Flask(__name__)
 app.debug = 'DEBUG' in os.environ
@@ -25,15 +24,22 @@ def about():
     return 'The about page'
 
 
+def get_clash_test():
+    global clash_data
+    if clash_data is None:
+        print 'loading'
+        clash_data = Clasher(xml_file)
+    return clash_data.data['exchange']['batchtest']['clashtests']['clashtest']
+
 @app.route('/clash/')
 def clash_index():
-    number_clashes = len(clash_data.data['exchange']['batchtest']['clashtests']['clashtest'])
+    number_clashes = len(get_clash_test())
     return render_template('clash_index.html', number_clashes=number_clashes)
 
 
 @app.route('/clash/<int:number>')
 def clash_by_number(number):
-    clash_info = clash_data.data['exchange']['batchtest']['clashtests']['clashtest'][number]
+    clash_info = get_clash_test()[number]
     return jsonify(clash_info)
 
 
@@ -45,6 +51,5 @@ def hello(name=None):
 
 @app.route('/time')
 def time_series():
-    #data_url = url_for('test-data.json')
     data_url = '/static/test-data.json'
     return render_template('clash-summary-over-time.html', data_url=data_url)

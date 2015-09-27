@@ -126,12 +126,11 @@ def clash_for_project(projectname):
 
 
 @app.route('/time')
-@app.route('/time/')
 def time_series():
-    data_url = '/static/test-data.json'
-    return render_template('clash-summary-over-time.html', data_url=data_url)
-
-
-@app.route('/time/<projectname>')
-def time_series_project(projectname):
-    return render_template('clash-summary-over-time.html', data_url=os.path.join('/clash', projectname))
+    try:
+        projectname = request.args['project']
+        data_url=os.path.join('/clash', projectname)
+    except:
+        projectname = "test"
+        data_url = '/static/test-data.json'
+    return render_template('clash-summary-over-time.html', projectname=projectname, data_url=data_url)

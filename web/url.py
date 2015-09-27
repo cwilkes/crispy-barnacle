@@ -82,13 +82,6 @@ def clash_by_number(buildingname, date):
     return jsonify(clash_info[0])
 
 
-
-@app.route('/hello/')
-@app.route('/hello/<name>')
-def hello(name=None):
-    return render_template('hello.html', name=name)
-
-
 @app.route('/time')
 @app.route('/time/')
 def time_series():

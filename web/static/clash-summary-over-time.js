@@ -6,7 +6,7 @@ function replot(data) {
     console.log(data['owner'])
 
     var myChart = new dimple.chart(svg, data);
-    var x = myChart.addTimeAxis("x", "date", "%Y-%m-%d", "%Y-%m-%d");
+    var x = myChart.addCategoryAxis("x", "date");
     var y = myChart.addMeasureAxis("y", "n_clashes");
 
     var series = myChart.addSeries('group', dimple.plot.bubble, [x, y]);
@@ -22,6 +22,7 @@ $.getJSON($('#data_url').text(), function (response) {
         $('#grouping').append($('<option>', {key: key}).text(key));
     });
     replot(data);
+
     var mySelect = document.getElementById("grouping");
     mySelect.addEventListener('change', function () {
         replot(data)

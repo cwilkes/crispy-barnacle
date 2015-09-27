@@ -2,6 +2,8 @@ var svg = dimple.newSvg("#plot", 800, 600);
 
 function replot(data) {
     svg.selectAll('*').remove();
+    console.log($('#grouping').val())
+    console.log(data['owner'])
 
     var myChart = new dimple.chart(svg, data);
     var x = myChart.addTimeAxis("x", "date", "%Y-%m-%d", "%Y-%m-%d");

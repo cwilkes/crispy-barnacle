@@ -12,6 +12,6 @@ acc = defaultdict(list)
 for day_json_file in sys.argv[1:]:
     with open(day_json_file) as fh:
         for (grouping, group_tuples) in json.load(fh).iteritems():
-            acc[grouping].append(group_tuples)
+            acc[grouping].extend(group_tuples)
 
 print(json.dumps(acc))

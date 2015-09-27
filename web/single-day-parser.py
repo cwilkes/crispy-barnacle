@@ -7,6 +7,7 @@ import xml.etree.ElementTree as ET
 import json
 import sys
 from collections import defaultdict
+import os
 
 def parse_clash_util_json(util_file):
     with open(util_file) as fh:
@@ -20,6 +21,7 @@ def parse_clash_util_json(util_file):
 class SingleDayParser(object):
     def __init__(self, clash_util):
         self.level_of_z, self.owner_of_file, self.responsibility = parse_clash_util_json(clash_util)
+        print >>sys.stderr, 'owners', self.owner_of_file
 
     def compute_level_of_z(self, z):
         try:
@@ -45,7 +47,7 @@ class SingleDayParser(object):
             z = float(item.find('clashpoint/pos3f').attrib['z'])
             level = self.compute_level_of_z(z)
 
-            owning_files = [plink[2].text for plink in item.findall('clashobjects/clashobject/pathlink')]
+            owning_files = [os.path.splitext(plink[2].text)[0] for plink in item.findall('clashobjects/clashobject/pathlink')]
             try:
                 disciplines = [self.owner_of_file[f]['discipline'] for f in owning_files]
                 owners =      [self.owner_of_file[f]['owner'] for f in owning_files]
@@ -53,7 +55,8 @@ class SingleDayParser(object):
                 primary_disciplines = [p['discipline'] for p in primaries]
                 primary_owners =      [p['owner'] for p in primaries]
             except KeyError as ex:
-                raise ValueError("File %s not found in clash_util" % ex)
+                print >>sys.stderr, "File %s not found in clash_util" % (ex, )
+                raise ex
 
             acc['level'][level] += 1
             for owner in owners:
@@ -77,8 +80,8 @@ def main():
         date = '2015-09-01'
         clash_util = 'clash_util.json'
 
-    (level_of_z, owner_of_file, responsibility) = parse_clash_util_json(clash_util)
-    summed_clashes_of = SingleDayParser(clash_xml).accumulate_clashes()
+    print >>sys.stderr, 'clash_xml: %s, date: %s, clash_util: %s' % (clash_xml, date, clash_util)
+    summed_clashes_of = SingleDayParser(clash_util).accumulate_clashes(clash_xml)
 
     clashes = dict()
     for (grouping, group_obj) in summed_clashes_of.iteritems():

@@ -9,6 +9,12 @@
 
 <body><p id="description"> High-level, day-over-day clashes over time.</p>
 
+
+<div id="current_project" hidden="true">{{  projectname }}</div>
+
+<select id="projects"></select>
+
+
 <!-- uncomment this to do testing -->
 <!-- div id="data_url" hidden="true">/static/test-data.json</div-->
 <div id="data_url" hidden="true">{{ data_url }}</div>
@@ -18,6 +24,7 @@
 <div id="plot"></div>
 
 <script src="/static/clash-summary-over-time.js"></script>
+<script src="/static/get_project_list.js"></script>
 </body>
 
 </html>

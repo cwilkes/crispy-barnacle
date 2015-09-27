@@ -1,13 +1,10 @@
 import xmltodict
-import urllib2
-import gzip
 import StringIO
 import os
 import boto3
 from datetime import datetime
 import redis
 import urlparse
-import simplejson as json
 import zlib
 import logging
 from dateutil import parser as date_parser

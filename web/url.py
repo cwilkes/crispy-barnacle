@@ -1,11 +1,9 @@
-from flask import Flask, render_template, jsonify, redirect, url_for, request, Response
+from flask import Flask, render_template, jsonify, redirect, request, Response
 from web.clasher import Clasher, DATA_DIR_XML
 import os
 import logging
-import StringIO
 import tempfile
 import re
-from datetime import datetime
 
 
 UPLOAD_FILE_FIELD_NAME = 'file'

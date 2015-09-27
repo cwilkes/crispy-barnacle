@@ -11,16 +11,17 @@ import os
 
 def parse_clash_util_json(util_file_str):
     data = json.loads(util_file_str) if type(util_file_str) == str else util_file_str
-    return (
-        dict([(float(v), k) for (k, v) in data['levels'].iteritems()]),
-        data['file_key'],
-        data['responsibility']
-    )
+
+    level_of_z = dict([(float(v), k) for (k, v) in data['levels'].iteritems()]) # invert the level->z
+    file_details = dict()
+    for (i, obj) in enumerate(data['file_specs']):
+        file_details[obj['name']] = {'priority': i, 'discipline': obj['discipline'], 'owner': obj['owner']}
+
+    return (level_of_z, file_details)
 
 class SingleDayParser(object):
     def __init__(self, util_file_str):
-        self.level_of_z, self.owner_of_file, self.responsibility = parse_clash_util_json(util_file_str)
-        print >>sys.stderr, 'owners', self.owner_of_file
+        self.level_of_z, self.details_of_file = parse_clash_util_json(util_file_str)
 
     def compute_level_of_z(self, z):
         try:
@@ -29,45 +30,36 @@ class SingleDayParser(object):
             raise ValueError("z value %f higher than roof" % z)
         return self.level_of_z[ceiling]
 
-    # Two owners if they're from the same discipline
-    # Else a list of one owner based on whose discipline has priority
-    def primary_of(self, owner_objs):
+    # Return the filename that has highest priority
+    def primary_of(self, owner_filenames):
         try:
-            if owner_objs[0]['discipline'] == owner_objs[1]['discipline']:
-                return owner_objs
+            return min(owner_filenames, key=lambda fn: self.details_of_file[fn]['priority'])
         except KeyError as ex:
-            raise ValueError("sub %s not found in responsibility hierarchy" % ex)
-        return [ min(owner_objs, key=lambda obj: self.responsibility.index(obj['discipline'])) ]
+            print >>sys.stderr, "File %s not found in clash_util" % (ex, )
+            raise ex
 
-    def accumulate_clashes(self, clash_xml):
+    def clashes_of(self, clash_xml, date):
         acc = defaultdict(lambda : defaultdict(int))
         doc = ET.parse(clash_xml)
         for item in doc.iterfind('batchtest/clashtests/clashtest/clashresults/clashresult'):
-            z = float(item.find('clashpoint/pos3f').attrib['z'])
-            level = self.compute_level_of_z(z)
+            z_coord = float(item.find('clashpoint/pos3f').attrib['z'])
+            level = self.compute_level_of_z(z_coord)
 
             owning_files = [os.path.splitext(plink[2].text)[0] for plink in item.findall('clashobjects/clashobject/pathlink')]
-            try:
-                disciplines = [self.owner_of_file[f]['discipline'] for f in owning_files]
-                owners =      [self.owner_of_file[f]['owner'] for f in owning_files]
-                primaries = self.primary_of([self.owner_of_file[f] for f in owning_files])
-                primary_disciplines = [p['discipline'] for p in primaries]
-                primary_owners =      [p['owner'] for p in primaries]
-            except KeyError as ex:
-                print >>sys.stderr, "File %s not found in clash_util" % (ex, )
-                raise ex
+            primary_owner = self.primary_of(owning_files)
 
-            acc['level'][level] += 1
-            for owner in owners:
-                acc['owner'][owner] += 1
-            for discipline in disciplines:
-                acc['discipline'][discipline] += 1
-            for primary_owner in primary_owners:
-                acc['primary_owner'][primary_owner] += 1
-            for primary_discipline in primary_disciplines:
-                acc['primary_discipline'][primary_discipline] += 1
+            acc['Total clashes']['Total Number of Clashes'] += 1
+            acc['Level'][level] += 1
+            for owning_file in owning_files:
+                acc['Owner'][self.details_of_file[owning_file]['owner']] += 1
+                acc['Discipline'][self.details_of_file[owning_file]['discipline']] += 1
+            acc['Primary owner'][self.details_of_file[primary_owner]['owner']] += 1
+            acc['Primary discipline'][self.details_of_file[primary_owner]['discipline']] += 1
 
-        return acc
+        clashes = dict()
+        for (grouping, group_obj) in acc.iteritems():
+            clashes[grouping] = [{'group': k, 'date': date, 'n_clashes': v} for (k,v) in group_obj.iteritems()]
+        return clashes
 
 def main():
     try:
@@ -80,12 +72,10 @@ def main():
         clash_util = 'clash_util.json'
 
     print >>sys.stderr, 'clash_xml: %s, date: %s, clash_util: %s' % (clash_xml, date, clash_util)
+    with open(clash_util) as fh:
+        clash_util_str = fh.read()
 
-    summed_clashes_of = SingleDayParser(clash_util).accumulate_clashes(clash_xml)
-
-    clashes = dict()
-    for (grouping, group_obj) in summed_clashes_of.iteritems():
-        clashes[grouping] = [{'group': k, 'date': date, 'n_clashes': v} for (k,v) in group_obj.iteritems()]
+    clashes = SingleDayParser(clash_util_str).clashes_of(clash_xml, date)
 
     print(json.dumps(clashes))
 

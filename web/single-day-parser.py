@@ -81,6 +81,7 @@ def main():
         clash_util = 'clash_util.json'
 
     print >>sys.stderr, 'clash_xml: %s, date: %s, clash_util: %s' % (clash_xml, date, clash_util)
+
     summed_clashes_of = SingleDayParser(clash_util).accumulate_clashes(clash_xml)
 
     clashes = dict()

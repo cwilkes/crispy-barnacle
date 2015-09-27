@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <title>Building {{ projectname }} date {{ date }}</title>
+  {% include 'head.html' %}
+    <script type="text/javascript" src="http://x3dom.org/x3dom/dist/x3dom-full.js"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='x3dom_plot.js') }}"></script>
+    <link rel="stylesheet" type="text/css" href="http://www.x3dom.org/download/dev/x3dom.css"/>
+</head>
+<body>
+
+
+<div id="divPlot"></div>
+    <script>
+     doPlot()
+    </script>
+
+</body>

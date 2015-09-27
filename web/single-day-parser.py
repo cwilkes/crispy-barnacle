@@ -77,8 +77,7 @@ def main():
         date = '2015-09-01'
         clash_util = 'clash_util.json'
 
-    (level_of_z, owner_of_file, responsibility) = parse_clash_util_json(clash_util)
-    summed_clashes_of = SingleDayParser(clash_xml).accumulate_clashes()
+    summed_clashes_of = SingleDayParser(clash_util).accumulate_clashes(clash_xml)
 
     clashes = dict()
     for (grouping, group_obj) in summed_clashes_of.iteritems():

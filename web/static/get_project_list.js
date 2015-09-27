@@ -17,5 +17,8 @@ $.get('/projects', function(response) {
 
  var mySelect2 = document.getElementById("projects");
     mySelect2.addEventListener('change', function () {
-        $.param()
+        var l = $(location)[0]
+        var newUrl = "http://" + l.host + l.pathname + "?project=" + $("#projects").val()
+        console.log("new url", newUrl)
+        $(location)[0].href = newUrl
     });

@@ -1,5 +1,5 @@
 from flask import Flask, render_template, jsonify, redirect, request, Response
-from web.clasher import Clasher, DATA_DIR_XML, PROJECT_META_DIR
+from web.clasher import Clasher, DATA_DIR_XML, PROJECT_META_DIR, COMBO_DIR
 import os
 import logging
 import tempfile
@@ -95,10 +95,10 @@ def list_projects():
     return Response('\r\n'.join(project_names), mimetype='text/plain')
 
 
-@app.route('/clash/<buildingname>/<date>')
-def clash_by_number(buildingname, date):
-    clash_info = get_clash_test(buildingname, date)
-    return jsonify(clash_info[0])
+@app.route('/clash/<projectname>')
+def clash_for_project(projectname):
+    combo_json = clasher.get_json(os.path.join(COMBO_DIR, projectname, 'combo.json'))
+    return jsonify(combo_json)
 
 
 @app.route('/time')

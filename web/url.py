@@ -88,6 +88,30 @@ def get_clash_test(building_name, date):
         return None
 
 
+@app.route('/plot/<projectname>/<date>')
+def get_coords_html(projectname, date):
+    coords=_get_coords(projectname, date)
+    return render_template('building_plot.html', projectname=projectname, date=date, coords=coords)
+
+
+def _get_coords(projectname, date):
+    clash_data = clasher.get_xml(projectname, date, '1.xml')
+    ret = list()
+    for data in clash_data['exchange']['batchtest']['clashtests']['clashtest']:
+        if data['clashresults'] is None:
+            continue
+        for d2 in data['clashresults']['clashresult']:
+            x, y, z = [float(d2['clashpoint']['pos3f']['@%s' % (_, )]) for _ in ('x', 'y', 'z')]
+            clash1, clash2 = [_['smarttags']['smarttag'][1]['value'] for _ in d2['clashobjects']['clashobject']]
+            ret.append(dict(name1=clash1, name2=clash2, x=x, y=y, z=z))
+            #app.logger.info('Added %s', ret[-1])
+    return get_coords
+
+@app.route('/coords/<projectname>/<date>')
+def get_coords(projectname, date):
+    return jsonify(dict(coords=_get_coords(projectname, date)))
+
+
 @app.route('/projects')
 def list_projects():
     projects = clasher.file_list_dict()['projects']

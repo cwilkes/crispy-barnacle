@@ -17,5 +17,5 @@ $.get('/projects', function(response) {
 
  var mySelect2 = document.getElementById("projects");
     mySelect2.addEventListener('change', function () {
-        replot(data)
+        $.param()
     });

@@ -133,4 +133,4 @@ def time_series():
     except:
         projectname = "test"
         data_url = '/static/test-data.json'
-    return render_template('clash-summary-over-time.html', data_url=data_url)
+    return render_template('clash-summary-over-time.html', projectname=projectname, data_url=data_url)

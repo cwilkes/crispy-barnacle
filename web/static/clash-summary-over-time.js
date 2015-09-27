@@ -9,7 +9,7 @@ function replot(data) {
     var x = myChart.addCategoryAxis("x", "date");
     var y = myChart.addMeasureAxis("y", "n_clashes");
 
-    var series = myChart.addSeries('group', dimple.plot.bubble, [x, y]);
+    var series = myChart.addSeries('group', dimple.plot.line, [x, y]);
     series.data = data[$('#grouping').val()];
 
     myChart.addLegend(60, 10, 500, 60, "right");

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Given a NavisWorks XML export, a per-project clash-util dump, and a date, convert to 
+# Given a NavisWorks XML export, a per-project clash-util dump, and a date, convert to
 # { grouping: {'group': group, 'date': date, 'n_clashes': n_clashes} }
 
 import xml.etree.ElementTree as ET
@@ -12,8 +12,8 @@ def parse_clash_util_json(util_file):
     with open(util_file) as fh:
         data = json.load(fh)
     return (
-        dict([(float(v), k) for (k, v) in data['levels'].iteritems()]), 
-        data['file_key'], 
+        dict([(float(v), k) for (k, v) in data['levels'].iteritems()]),
+        data['file_key'],
         data['responsibility']
     )
 
@@ -63,20 +63,25 @@ def accumulate_clashes(clash_xml):
 
     return acc
 
-try:
-    clash_xml = sys.argv[1]
-    date = sys.argv[2]
-    clash_util = sys.argv[3]
-except:
-    clash_xml = 'xml/PC-00-COMP-BBC-2.xml'
-    date = '2015-09-01'
-    clash_util = 'clash_util.json'
+def main():
+    try:
+        clash_xml = sys.argv[1]
+        date = sys.argv[2]
+        clash_util = sys.argv[3]
+    except:
+        clash_xml = 'xml/PC-00-COMP-BBC-2.xml'
+        date = '2015-09-01'
+        clash_util = 'clash_util.json'
 
-(level_of_z, owner_of_file, responsibility) = parse_clash_util_json(clash_util)
-summed_clashes_of = accumulate_clashes(clash_xml)
+    (level_of_z, owner_of_file, responsibility) = parse_clash_util_json(clash_util)
+    summed_clashes_of = accumulate_clashes(clash_xml)
 
-clashes = dict()
-for (grouping, group_obj) in summed_clashes_of.iteritems():
-    clashes[grouping] = [{'group': k, 'date': date, 'n_clashes': v} for (k,v) in group_obj.iteritems()]
+    clashes = dict()
+    for (grouping, group_obj) in summed_clashes_of.iteritems():
+        clashes[grouping] = [{'group': k, 'date': date, 'n_clashes': v} for (k,v) in group_obj.iteritems()]
 
-print(json.dumps(clashes))
+    print(json.dumps(clashes))
+
+
+if __name__ == '__main__':
+    sys.exit(main())

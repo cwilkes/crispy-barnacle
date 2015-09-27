@@ -9,9 +9,8 @@ import sys
 from collections import defaultdict
 import os
 
-def parse_clash_util_json(util_file):
-    with open(util_file) as fh:
-        data = json.load(fh)
+def parse_clash_util_json(util_file_str):
+    data = json.loads(util_file_str) if type(util_file_str) == str else util_file_str
     return (
         dict([(float(v), k) for (k, v) in data['levels'].iteritems()]),
         data['file_key'],
@@ -19,8 +18,8 @@ def parse_clash_util_json(util_file):
     )
 
 class SingleDayParser(object):
-    def __init__(self, clash_util):
-        self.level_of_z, self.owner_of_file, self.responsibility = parse_clash_util_json(clash_util)
+    def __init__(self, util_file_str):
+        self.level_of_z, self.owner_of_file, self.responsibility = parse_clash_util_json(util_file_str)
         print >>sys.stderr, 'owners', self.owner_of_file
 
     def compute_level_of_z(self, z):

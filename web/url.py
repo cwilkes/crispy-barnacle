@@ -1,5 +1,5 @@
 from flask import Flask, render_template, jsonify, redirect, request, Response
-from web.clasher import Clasher, DATA_DIR_XML
+from web.clasher import Clasher, DATA_DIR_XML, PROJECT_META_DIR
 import os
 import logging
 import tempfile
@@ -30,30 +30,51 @@ def file_list():
 
 def _save_upload():
     fn_obj = request.files[UPLOAD_FILE_FIELD_NAME]
-    tmp_file = tempfile.mktemp()
+    tmp_file = tempfile.mktemp(suffix='.tmp', prefix='navis')
     app.logger.info('Files: %s %s tmp %s', fn_obj.mimetype, fn_obj, tmp_file)
     fn_obj.save(tmp_file)
     return tmp_file, fn_obj.filename
 
 
-def _upload_file(tmp_file, projectname, date):
-    dest_path = os.path.join(DATA_DIR_XML, projectname, date.replace('-', '/'), '1.xml')
+def _upload_any_file(tmp_file, projectname, prefix, file_name):
+    dest_path = os.path.join(prefix, projectname, file_name)
     real_dest_path = clasher.upload_file(tmp_file, dest_path)
     os.unlink(tmp_file)
     return real_dest_path
+
+
+def _upload_file_xml(tmp_file, projectname, date):
+    dest_path = os.path.join(DATA_DIR_XML, projectname, date.replace('-', '/'), '1.xml')
+    real_dest_path = clasher.upload_file(tmp_file, dest_path)
+    clasher.pare_down_xml(projectname, date)
+    os.unlink(tmp_file)
+    return real_dest_path
+
+
+@app.route('/projects/<projectname>', methods=['POST', ])
+def upload_project_meta(projectname):
+    tmp_file, file_name = _save_upload()
+    return _upload_any_file(tmp_file, projectname, PROJECT_META_DIR, 'util.json')
+
+
+@app.route('/projects/<projectname>')
+def get_project_meta(projectname):
+    clasher.get_gzip_file(os.path.join())
+    tmp_file, file_name = _save_upload()
+    return _upload_any_file(tmp_file, projectname, PROJECT_META_DIR, 'util.json')
 
 
 @app.route('/xml/<projectname>', methods=['POST', ])
 def upload_xml_no_date(projectname):
     tmp_file, fn_name = _save_upload()
     date = clasher.get_new_date(projectname)
-    return _upload_file(tmp_file, projectname, date)
+    return _upload_file_xml(tmp_file, projectname, date)
 
 
 @app.route('/xml/<projectname>/<date>', methods=['POST', ])
 def upload_xml(projectname, date):
     tmp_file, fn_name = _save_upload()
-    return _upload_file(tmp_file, projectname, date)
+    return _upload_file_xml(tmp_file, projectname, date)
 
 
 def get_clash_test(building_name, date):

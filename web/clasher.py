@@ -10,10 +10,17 @@ import logging
 from dateutil import parser as date_parser
 import re
 from dateutil.relativedelta import relativedelta
+from web.single_day_parser import SingleDayParser
+import simplejson as json
 
 
 S3_BUCKET_NAME = 'navishack'
 DATA_DIR_XML = 'xml'
+PROJECT_META_DIR = 'project'
+PARE_DOWN_DIR = 'single_json'
+COMBO_DIR = 'combo_json'
+
+
 DATE_RE = re.compile('(\d{4}.\d{2}.\d{2})')
 
 class Clasher(object):
@@ -61,9 +68,17 @@ class Clasher(object):
         ret_date = last_date + relativedelta(days=+1)
         return ret_date.strftime('%Y-%m-%d')
 
+    def pare_down_xml(self, projectname, date):
+        project_json = self.get_json(os.path.join(PROJECT_META_DIR, projectname, 'util.json'))
+        parser = SingleDayParser(project_json)
+        xml = self.get_xml_string(projectname, date, '1.xml')
+        ac = parser.accumulate_clashes(StringIO.StringIO(xml))
+        self.upload_file(StringIO.StringIO(json.dumps(ac)), os.path.join(PARE_DOWN_DIR, projectname, date + '.json'))
+        self.combine_single_jsons()
 
     def upload_file(self, local_data, dest_path):
-        self.s3.Object(S3_BUCKET_NAME, dest_path).put(Body=open(local_data, 'rb'))
+        body = open(local_data, 'rb') if type(local_data) == str else local_data
+        self.s3.Object(S3_BUCKET_NAME, dest_path).put(Body=body)
         return dest_path
 
     def list_projects(self):
@@ -98,6 +113,7 @@ class Clasher(object):
                 self.logger.warn('Error parsing compressed file %s', ex)
                 raise ex
         key = self.s3.Object(S3_BUCKET_NAME, fn)
+        self.logger.info('Reading s3 key %s', key)
         raw_data = StringIO.StringIO(key.get()['Body'].read()).read()
         if fn.endswith('.gz'):
             self.r.set(fn, raw_data)
@@ -106,9 +122,15 @@ class Clasher(object):
             self.r.set(fn, zlib.compress(raw_data, 9))
             return raw_data
 
-    def get_xml(self, project, date, name):
+    def get_json(self, s3_key):
+        return json.loads(self.get_gzip_file(s3_key))
+
+    def get_xml_string(self, project, date, name):
         fn = os.path.join(DATA_DIR_XML, project, date.replace('-', '/'), name)
         self.logger.info('fetching %s', fn)
-        xml = self.get_gzip_file(fn)
+        return self.get_gzip_file(fn)
+
+    def get_xml(self, project, date, name):
+        xml = self.get_xml_string(project, date, name)
         self.logger.info('XML: %s', xml[:100])
         return xmltodict.parse(xml)

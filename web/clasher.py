@@ -5,6 +5,9 @@ import StringIO
 import os
 import boto3
 from datetime import datetime
+import redis
+import urlparse
+import simplejson as json
 
 
 S3_BUCKET_NAME = 'navishack'
@@ -13,6 +16,8 @@ DATA_DIR_XML = 'xml'
 class Clasher(object):
     def __init__(self):
         self.s3 = boto3.resource('s3')
+        url = urlparse.urlparse(os.environ.get('REDISCLOUD_URL'))
+        self.r = redis.Redis(host=url.hostname, port=url.port, password=url.password)
 
     def _list_xml_files(self, prefix='xml'):
         bucket = self.s3.Bucket(S3_BUCKET_NAME)
@@ -61,10 +66,16 @@ class Clasher(object):
     def get_xml(self, project, date, name):
         fn = os.path.join(DATA_DIR_XML, project, date.replace('-', '/'), name)
         print 'fn', fn
+        raw_data = self.r.get(fn)
+        if raw_data is not None:
+            print 'Using cached', fn
+            return json.loads(raw_data)
         key = self.s3.Object(S3_BUCKET_NAME, fn)
         raw_data = StringIO.StringIO(key.get()['Body'].read())
         if fn.endswith('.gz'):
             decompressed_file = gzip.GzipFile(fileobj=raw_data)
-            return xmltodict.parse(decompressed_file.read())
+            j = xmltodict.parse(decompressed_file.read())
         else:
-            return xmltodict.parse(raw_data)
+            j = xmltodict.parse(raw_data)
+        self.r.set(fn, json.dumps(j))
+        return j

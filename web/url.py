@@ -1,13 +1,14 @@
-from flask import Flask, render_template, jsonify, redirect, url_for
+from flask import Flask, render_template, jsonify, redirect, url_for, request
 from web.clasher import Clasher
 import os
 
 xml_file = 'PC-00-COMP-BBC.xml.gz'
 clasher = Clasher()
 
+
+
 app = Flask(__name__)
 app.debug = 'DEBUG' in os.environ
-
 
 @app.route('/')
 def index():
@@ -19,23 +20,15 @@ def projects():
     return 'The project page'
 
 
-@app.route('/meta/<project>')
-def upload_metadata(project):
-    pass
-
 @app.route('/list')
 def file_list():
     return jsonify(clasher.file_list_dict())
 
 
-@app.route('/xml/<project>/<date>')
+@app.route('/xml/<project>/<date>', methods=['POST', ])
 def upload_xml(project, date):
-    pass
-
-
-@app.route('/about')
-def about():
-    return 'The about page'
+    uploaded_files = request.files.getlist('file[]')
+    return [_.filename for _ in uploaded_files]
 
 
 def get_clash_test():

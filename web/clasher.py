@@ -8,6 +8,7 @@ from datetime import datetime
 import redis
 import urlparse
 import simplejson as json
+import zlib
 
 
 S3_BUCKET_NAME = 'navishack'
@@ -63,19 +64,19 @@ class Clasher(object):
             files.add(fn.split('/')[-1])
         return sorted(files)
 
-    def get_xml(self, project, date, name):
-        fn = os.path.join(DATA_DIR_XML, project, date.replace('-', '/'), name)
-        print 'fn', fn
+    def get_gzip_file(self, fn):
         raw_data = self.r.get(fn)
         if raw_data is not None:
-            print 'Using cached', fn
-            return json.loads(raw_data)
+            return zlib.decompress(raw_data)
         key = self.s3.Object(S3_BUCKET_NAME, fn)
-        raw_data = StringIO.StringIO(key.get()['Body'].read())
+        raw_data = StringIO.StringIO(key.get()['Body'].read()).read()
         if fn.endswith('.gz'):
-            decompressed_file = gzip.GzipFile(fileobj=raw_data)
-            j = xmltodict.parse(decompressed_file.read())
+            self.r.set(fn, raw_data)
+            return zlib.decompress(raw_data)
         else:
-            j = xmltodict.parse(raw_data)
-        self.r.set(fn, json.dumps(j))
-        return j
+            self.r.set(fn, zlib.compress(raw_data, 9))
+            return raw_data
+
+    def get_xml(self, project, date, name):
+        fn = os.path.join(DATA_DIR_XML, project, date.replace('-', '/'), name)
+        return xmltodict.parse(self.get_gzip_file(fn))

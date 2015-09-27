@@ -12,7 +12,7 @@ function replot(data) {
     var series = myChart.addSeries('group', dimple.plot.bubble, [x, y]);
     series.data = data[$('#grouping').val()];
 
-    myChart.addLegend(60, 10, 500, 20, "right");
+    myChart.addLegend(60, 10, 500, 60, "right");
     myChart.draw();
 }
 

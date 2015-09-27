@@ -3,7 +3,7 @@ from web.clasher import Clasher
 import os
 
 xml_file = 'PC-00-COMP-BBC.xml.gz'
-clash_data = None
+clasher = Clasher()
 
 app = Flask(__name__)
 app.debug = 'DEBUG' in os.environ
@@ -19,17 +19,29 @@ def projects():
     return 'The project page'
 
 
+@app.route('/meta/<project>')
+def upload_metadata(project):
+    pass
+
+@app.route('/list')
+def file_list():
+    return jsonify(clasher.file_list_dict())
+
+
+@app.route('/xml/<project>/<date>')
+def upload_xml(project, date):
+    pass
+
+
 @app.route('/about')
 def about():
     return 'The about page'
 
 
 def get_clash_test():
-    global clash_data
-    if clash_data is None:
-        print 'loading'
-        clash_data = Clasher(xml_file)
-    return clash_data.data['exchange']['batchtest']['clashtests']['clashtest']
+    clash_data = clasher.get_xml('building1', '2015-04-01', '1.xml')
+    return clash_data['exchange']['batchtest']['clashtests']['clashtest']
+
 
 @app.route('/clash/')
 def clash_index():

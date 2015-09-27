@@ -9,13 +9,16 @@ import redis
 import urlparse
 import simplejson as json
 import zlib
+import logging
+
 
 
 S3_BUCKET_NAME = 'navishack'
 DATA_DIR_XML = 'xml'
 
 class Clasher(object):
-    def __init__(self):
+    def __init__(self, logger=None):
+        self.logger = logger if logger else logging
         self.s3 = boto3.resource('s3')
         url = urlparse.urlparse(os.environ.get('REDISCLOUD_URL'))
         self.r = redis.Redis(host=url.hostname, port=url.port, password=url.password)
@@ -43,6 +46,9 @@ class Clasher(object):
             p3.append(dict(project=project, dates=dates))
         return dict(projects=p3)
 
+    def upload_file(self, local_data, dest_path):
+        self.s3.Object(S3_BUCKET_NAME, dest_path).put(Body=open(local_data, 'rb'))
+
     def list_projects(self):
         projects = set([_.split('/')[1] for _ in self._list_xml_files()])
         projects.remove('')
@@ -65,9 +71,15 @@ class Clasher(object):
         return sorted(files)
 
     def get_gzip_file(self, fn):
+        self.logger.info('get gzip file %s', fn)
         raw_data = self.r.get(fn)
         if raw_data is not None:
-            return zlib.decompress(raw_data)
+            self.logger.info('From cache %s size: %d', fn, len(raw_data))
+            try:
+                return zlib.decompress(raw_data)
+            except Exception as ex:
+                self.logger.warn('Error parsing compressed file %s', ex)
+                raise ex
         key = self.s3.Object(S3_BUCKET_NAME, fn)
         raw_data = StringIO.StringIO(key.get()['Body'].read()).read()
         if fn.endswith('.gz'):
@@ -79,4 +91,7 @@ class Clasher(object):
 
     def get_xml(self, project, date, name):
         fn = os.path.join(DATA_DIR_XML, project, date.replace('-', '/'), name)
-        return xmltodict.parse(self.get_gzip_file(fn))
+        self.logger.info('fetching %s', fn)
+        xml = self.get_gzip_file(fn)
+        self.logger.info('XML: %s', xml[:100])
+        return xmltodict.parse(xml)

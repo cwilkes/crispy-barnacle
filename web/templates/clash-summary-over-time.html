@@ -10,19 +10,19 @@
 <body>
   <center>
     <div id="content" style="max-width:800px">
-      <h2> <p id="description"> Summary of clashes over time </p> </h2>
+      <h2> <div id="description"> Summary of clashes over time</div></h2>
+      <h3>Current project: {{ projectname }}</h3>
 
 
 <div id="current_project" hidden="true">{{  projectname }}</div>
-
-<select id="projects"></select>
-
 
 <!-- uncomment this to do testing -->
 <!-- div id="data_url" hidden="true">/static/test-data.json</div-->
 <div id="data_url" hidden="true">{{ data_url }}</div>
 
 
+
+       <div id="filter1" align="left">Select project: <select id="projects"></select></div>
       <div id="filter" align="left"> Group clashes by: <select id="grouping"></select> </div>
       <div id="plot"></div>
     </div>

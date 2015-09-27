@@ -130,3 +130,8 @@ def clash_for_project(projectname):
 def time_series():
     data_url = '/static/test-data.json'
     return render_template('clash-summary-over-time.html', data_url=data_url)
+
+
+@app.route('/time/<projectname>')
+def time_series_project(projectname):
+    return render_template('clash-summary-over-time.html', data_url=os.path.join('/clash', projectname))

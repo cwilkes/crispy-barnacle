@@ -73,7 +73,7 @@ class Clasher(object):
         project_json = self.get_json(os.path.join(PROJECT_META_DIR, projectname, 'util.json'))
         parser = SingleDayParser(project_json)
         xml = self.get_xml_string(projectname, date, '1.xml')
-        ac = parser.accumulate_clashes(StringIO.StringIO(xml))
+        ac = parser.clashes_of(StringIO.StringIO(xml), date)
         self.upload_file(StringIO.StringIO(json.dumps(ac)), os.path.join(PARE_DOWN_DIR, projectname, date + '.json'))
         self.combine_single_jsons(projectname)
 
@@ -87,6 +87,7 @@ class Clasher(object):
     def upload_file(self, local_data, dest_path):
         body = open(local_data, 'rb') if type(local_data) == str else local_data
         self.s3.Object(S3_BUCKET_NAME, dest_path).put(Body=body)
+        self.r.delete(dest_path)
         return dest_path
 
     def list_projects(self):

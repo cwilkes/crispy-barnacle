@@ -7,17 +7,22 @@
  <script src="/static/jquery-1.11.3.min.js"></script>
 </head>
 
-<body><p id="description"> High-level, day-over-day clashes over time.</p>
+<body>
+  <center>
+    <div id="content" style="max-width:800px">
+      <h2> <p id="description"> Summary of clashes over time </p> </h2>
 
 <!-- uncomment this to do testing -->
 <!-- div id="data_url" hidden="true">/static/test-data.json</div-->
 <div id="data_url" hidden="true">{{ data_url }}</div>
 
 
-<select id="grouping"></select>
-<div id="plot"></div>
+      <div id="filter" align="left"> Group clashes by: <select id="grouping"></select> </div>
+      <div id="plot"></div>
+    </div>
 
-<script src="/static/clash-summary-over-time.js"></script>
+  </center>
+  <script src="/static/clash-summary-over-time.js"></script>
 </body>
 
 </html>

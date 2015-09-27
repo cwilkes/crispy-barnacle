@@ -10,11 +10,14 @@ import urlparse
 import simplejson as json
 import zlib
 import logging
-
+from dateutil import parser as date_parser
+import re
+from dateutil.relativedelta import relativedelta
 
 
 S3_BUCKET_NAME = 'navishack'
 DATA_DIR_XML = 'xml'
+DATE_RE = re.compile('(\d{4}.\d{2}.\d{2})')
 
 class Clasher(object):
     def __init__(self, logger=None):
@@ -46,8 +49,25 @@ class Clasher(object):
             p3.append(dict(project=project, dates=dates))
         return dict(projects=p3)
 
+    def get_new_date(self, projectname):
+        bucket = self.s3.Bucket(S3_BUCKET_NAME)
+        col = bucket.objects.filter(Prefix=os.path.join(DATA_DIR_XML, projectname))
+        # xml/cjw/2014/07/24/1.xml
+        dates = list()
+        for fn in (_.key for _ in col):
+            m = DATE_RE.search(fn)
+            dates.append(date_parser.parse(m.groups(1)[0]))
+        if dates:
+            last_date = sorted(dates)[-1]
+        else:
+            last_date = datetime.now()
+        ret_date = last_date + relativedelta(days=+1)
+        return ret_date.strftime('%Y-%m-%d')
+
+
     def upload_file(self, local_data, dest_path):
         self.s3.Object(S3_BUCKET_NAME, dest_path).put(Body=open(local_data, 'rb'))
+        return dest_path
 
     def list_projects(self):
         projects = set([_.split('/')[1] for _ in self._list_xml_files()])

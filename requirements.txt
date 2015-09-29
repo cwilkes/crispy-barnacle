@@ -1,9 +1,7 @@
-alembic==0.8.2
 appnope==0.1.0
 decorator==4.0.4
 docutils==0.12
 Flask==0.10.1
-Flask-Script==2.0.5
 futures==2.2.0
 gnureadline==6.3.3
 gunicorn==19.3.0

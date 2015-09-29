@@ -1,9 +1,6 @@
-import xmltodict
 import StringIO
 import os
 from datetime import datetime
-import redis
-import urlparse
 import logging
 from dateutil import parser as date_parser
 import re
@@ -83,8 +80,6 @@ def date_matcher_func(fn):
 class Clasher(object):
     def __init__(self, logger=None):
         self.logger = logger if logger else logging
-        url = urlparse.urlparse(os.environ.get('REDISCLOUD_URL'))
-        self.r = redis.Redis(host=url.hostname, port=url.port, password=url.password)
         self.s3service = S3Helper()
 
     def get_new_date(self, projectname):
@@ -115,12 +110,10 @@ class Clasher(object):
         single_datas = [self.get_json(_) for _ in key_names]
         self.logger.info("SD1: %s", single_datas[0])
         acc = combine_readers((StringIO.StringIO(json.dumps(_)) for _ in single_datas))
-        self.upload_file(StringIO.StringIO(json.dumps(acc)), os.path.join(COMBO_DIR, projectname, 'combo.json'))
+        self.upload_file(StringIO.StringIO(json.dumps(acc)), project_combo_file(projectname))
 
     def upload_file(self, local_data, dest_path):
-        ret = self.s3service.upload_file(local_data, dest_path)
-        self.r.delete(dest_path)
-        return dest_path
+        return self.s3service.upload_file(local_data, dest_path)
 
     def list_projects(self):
         def get_middle_section(key):
@@ -131,15 +124,7 @@ class Clasher(object):
         return sorted(projects)
 
     def get_file(self, fn):
-        self.logger.info('Initial get file %s', fn)
-        raw_data = self.r.get(fn)
-        if raw_data is not None:
-            self.logger.info('File %s in cache', fn)
-            return raw_data
-        self.logger.info('Get file %s out of s3', fn)
-        ret = self.s3service.get_file(fn)
-        self.r.set(fn, ret)
-        return ret
+        return self.s3service.get_file(fn)
 
     def get_json(self, s3_key):
         data = self.get_file(s3_key)

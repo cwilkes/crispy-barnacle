@@ -1,7 +1,9 @@
 from flask import Flask, render_template, jsonify, redirect, request, Response
-from web.clasher import Clasher, COMBO_DIR
+from web.clasher import Clasher
 import os
 import logging
+from flask.ext.sqlalchemy import SQLAlchemy
+
 
 
 UPLOAD_FILE_FIELD_NAME = 'file'
@@ -12,6 +14,12 @@ app.debug = 'DEBUG' in os.environ
 app.logger.addHandler(logging.StreamHandler())
 if app.debug:
     app.logger.setLevel(logging.INFO)
+
+app.config.from_object(os.environ['APP_SETTINGS'])
+
+db = SQLAlchemy(app)
+
+from models import Project, XmlUploads, ClashesJson, ClashesCombinedJson
 
 clasher = Clasher(app.logger)
 

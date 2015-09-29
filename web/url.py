@@ -20,16 +20,9 @@ def index():
     return redirect('/list')
 
 
-@app.route('/list')
-def file_list():
-    return jsonify(clasher.file_list_dict())
-
-
 @app.route('/projects')
 def list_projects():
-    projects = clasher.file_list_dict()['projects']
-    project_names = sorted([_['project'] for _ in projects])
-    return Response('\r\n'.join(project_names), mimetype='text/plain')
+    return Response('\r\n'.join(clasher.list_projects()), mimetype='text/plain')
 
 
 @app.route('/projects/<projectname>', methods=['POST', ])

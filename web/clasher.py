@@ -24,6 +24,14 @@ COMBO_DIR = 'combo_json'
 
 DATE_RE = re.compile('(\d{4}.\d{2}.\d{2})')
 
+
+def project_metadata_file(projectname):
+    return os.path.join(PROJECT_META_DIR, projectname, 'util.json')
+
+def project_combo_file(projectname):
+    return os.path.join(COMBO_DIR, projectname, 'combo.json')
+
+
 class Clasher(object):
     def __init__(self, logger=None):
         self.logger = logger if logger else logging
@@ -69,13 +77,23 @@ class Clasher(object):
         ret_date = last_date + relativedelta(days=+1)
         return ret_date.strftime('%Y-%m-%d')
 
-    def pare_down_xml(self, projectname, date):
+    def pare_down_xml(self, reader, projectname, date):
         project_json = self.get_json(os.path.join(PROJECT_META_DIR, projectname, 'util.json'))
         parser = SingleDayParser(project_json)
-        xml = self.get_xml_string(projectname, date, '1.xml')
-        ac = parser.clashes_of(StringIO.StringIO(xml), date)
-        self.upload_file(StringIO.StringIO(json.dumps(ac)), os.path.join(PARE_DOWN_DIR, projectname, date + '.json'))
+        ac = parser.clashes_of(reader, date)
+        output_file = os.path.join(PARE_DOWN_DIR, projectname, date + '.json')
+        self.upload_file(StringIO.StringIO(json.dumps(ac)), output_file)
         self.combine_single_jsons(projectname)
+        return output_file
+
+    def save_project_metadata(self, reader, projectname):
+        return self.upload_file(reader, project_metadata_file(projectname))
+
+    def get_project_metadata(self, projectname):
+        return self.get_json(project_metadata_file(projectname))
+
+    def get_clash(self, projectname):
+        return self.get_json(project_combo_file(projectname))
 
     def combine_single_jsons(self, projectname):
         key_names = self._list_files(os.path.join(PARE_DOWN_DIR, projectname))

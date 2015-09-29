@@ -2,9 +2,7 @@
 <html>
 <head>
   <title>Clashes over time</title>
- <script src="/static/d3.min.js"></script>
- <script src="/static/dimple.v2.1.6.min.js"></script>
- <script src="/static/jquery-1.11.3.min.js"></script>
+  {% include 'head.html' %}
 </head>
 
 <body>
@@ -15,12 +13,9 @@
 
 
 
-<div id="current_project" hidden="true">{{  projectname }}</div>
+<div id="current_project" hidden="true">{{ projectname }}</div>
 
-<!-- uncomment this to do testing -->
-<!-- div id="data_url" hidden="true">/static/test-data.json</div-->
 <div id="data_url" hidden="true">{{ data_url }}</div>
-
 
   <table align="left" width="100%">
     <tr><td>
@@ -28,19 +23,18 @@
       <div id="filter" > Group clashes by: <select id="grouping"></select> </div>
     </td>
     <td>
-      <div id="logo" align="right"><img src="https://s3.amazonaws.com/navishack/project/{{ projectname }}/logo.jpg"/></div>
+      <div id="logo" align="right"><img src="{{ logo_url }}"/></div>
     </td>
     </tr>
   </table>
-
 
 
       <div id="plot"></div>
     </div>
 
 
-   <script src="/static/clash-summary-over-time.js"></script>
-   <script src="/static/get_project_list.js"></script>
+   <script src="{{ url_for('static', filename='clash-summary-over-time.js')}}"></script>
+   <script src="{{ url_for('static', filename='get_project_list.js')}}"></script>
   </center>
 
 </body>

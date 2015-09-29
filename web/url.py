@@ -28,7 +28,8 @@ def list_projects():
 @app.route('/projects/<projectname>', methods=['POST', ])
 def upload_project_meta(projectname):
     upload_file = request.files[UPLOAD_FILE_FIELD_NAME]
-    location = clasher.save_project_metadata(upload_file.stream, projectname)
+    location = clasher.save_project_metadata(projectname, upload_file.stream)
+    upload_file.close()
     return location
 
 
@@ -45,7 +46,7 @@ def upload_xml_no_date(projectname):
 @app.route('/xml/<projectname>/<date>', methods=['POST', ])
 def upload_xml(projectname, date):
     upload_file = request.files[UPLOAD_FILE_FIELD_NAME]
-    saved_location = clasher.pare_down_xml(upload_file.stream, projectname, date)
+    saved_location = clasher.pare_down_xml(projectname, date, upload_file.stream)
     upload_file.close()
     return saved_location
 
@@ -53,6 +54,19 @@ def upload_xml(projectname, date):
 @app.route('/clash/<projectname>')
 def clash_for_project(projectname):
     return jsonify(clasher.get_clash(projectname))
+
+
+@app.route('/projects/<projectname>/logo', methods=['POST', ])
+def upload_logo(projectname):
+    upload_file = request.files[UPLOAD_FILE_FIELD_NAME]
+    loc = clasher.upload_logo(projectname, upload_file.stream)
+    upload_file.close()
+    return loc
+
+
+@app.route('/projects/<projectname>/logo')
+def get_logo(projectname):
+    return Response(clasher.get_logo(projectname), mimetype='image/jpg')
 
 
 @app.route('/time')
@@ -63,4 +77,5 @@ def time_series():
     except:
         projectname = "test"
         data_url = '/static/test-data.json'
-    return render_template('clash-summary-over-time.html', projectname=projectname, data_url=data_url)
+    logo_url = os.path.join('/projects', projectname, 'logo')
+    return render_template('clash-summary-over-time.html', projectname=projectname, data_url=data_url, logo_url=logo_url)

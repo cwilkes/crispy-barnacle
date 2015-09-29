@@ -8,7 +8,8 @@ from dateutil.relativedelta import relativedelta
 from web.single_day_parser import SingleDayParser
 import simplejson as json
 from compile_days import combine_readers
-
+import redis
+import urlparse
 
 S3_BUCKET_NAME = 'navishack'
 PROJECT_META_DIR = 'project'
@@ -28,30 +29,23 @@ def project_combo_file(projectname):
 def project_single_file(projectname, date):
     return os.path.join(PARE_DOWN_DIR, projectname, date + '.json')
 
+def project_logo_file(projectname):
+    return os.path.join(PROJECT_META_DIR, projectname, 'logo.jpg')
+
+
 def blank(target):
     return '' if target is None else target
 
-class S3Helper(object):
-    def __init__(self, access_key=None, secret_key=None):
-        if access_key is None:
-            import boto3
-            self.s3 = boto3.resource('s3')
-        else:
-            from boto3.session import Session
-            session = Session(access_key, secret_key, None)
-            self.s3 = session.resource('s3')
+class RedisHelper(object):
+    def __init__(self, input_url=None):
+        url = urlparse.urlparse(input_url if input_url else os.environ.get('REDISCLOUD_URL'))
+        self.r = redis.Redis(host=url.hostname, port=url.port, password=url.password)
 
     def all_files(self, prefix=None):
-        bucket = self.s3.Bucket(S3_BUCKET_NAME)
-        col = bucket.objects.filter(Prefix='/' if prefix is None else prefix)
-        ret = list(col)
-        try:
-            # this is cheesy, list above returns an array
-            # or if one item just that item
-            iter(ret)
-            return [_.key for _ in ret]
-        except:
-            return [ret.key, ]
+        if prefix is None:
+            return self.r.keys()
+        else:
+            return self.r.keys(os.path.join(prefix, '*'))
 
     def project_files(self, projectname, category, match_func=None):
         for fn in self.all_files(os.path.join(blank(category), blank(projectname))):
@@ -62,14 +56,12 @@ class S3Helper(object):
             else:
                 yield fn
 
-    def upload_file(self, local_data, dest_path):
-        body = open(local_data, 'rb') if type(local_data) == str else local_data
-        self.s3.Object(S3_BUCKET_NAME, dest_path).put(Body=body)
+    def upload_file(self, dest_path, value):
+        self.r.set(dest_path, value)
         return dest_path
 
     def get_file(self, fn):
-        key = self.s3.Object(S3_BUCKET_NAME, fn)
-        return StringIO.StringIO(key.get()['Body'].read()).read()
+        return self.r.get(fn)
 
 
 def date_matcher_func(fn):
@@ -80,24 +72,24 @@ def date_matcher_func(fn):
 class Clasher(object):
     def __init__(self, logger=None):
         self.logger = logger if logger else logging
-        self.s3service = S3Helper()
+        self.file_service = RedisHelper()
 
     def get_new_date(self, projectname):
-        dates = sorted(self.s3service.project_files(projectname, PARE_DOWN_DIR, date_matcher_func))
+        dates = sorted(self.file_service.project_files(projectname, PARE_DOWN_DIR, date_matcher_func))
         last_date = dates[-1] if dates else datetime.now()
         return (last_date + relativedelta(days=+1)).strftime('%Y-%m-%d')
 
-    def pare_down_xml(self, reader, projectname, date):
+    def pare_down_xml(self, projectname, date, xml_reader):
         project_json = self.get_json(project_metadata_file(projectname))
         parser = SingleDayParser(project_json)
-        ac = parser.clashes_of(reader, date)
+        ac = parser.clashes_of(xml_reader, date)
         output_file = project_single_file(projectname, date)
-        self.upload_file(StringIO.StringIO(json.dumps(ac)), output_file)
+        self.upload_file(output_file, json.dumps(ac))
         self.combine_single_jsons(projectname)
         return output_file
 
-    def save_project_metadata(self, reader, projectname):
-        return self.upload_file(reader, project_metadata_file(projectname))
+    def save_project_metadata(self, projectname, reader):
+        return self.upload_file(project_metadata_file(projectname), reader.read())
 
     def get_project_metadata(self, projectname):
         return self.get_json(project_metadata_file(projectname))
@@ -106,25 +98,25 @@ class Clasher(object):
         return self.get_json(project_combo_file(projectname))
 
     def combine_single_jsons(self, projectname):
-        key_names = self.s3service.project_files(projectname, PARE_DOWN_DIR)
+        key_names = self.file_service.project_files(projectname, PARE_DOWN_DIR)
         single_datas = [self.get_json(_) for _ in key_names]
         self.logger.info("SD1: %s", single_datas[0])
         acc = combine_readers((StringIO.StringIO(json.dumps(_)) for _ in single_datas))
-        self.upload_file(StringIO.StringIO(json.dumps(acc)), project_combo_file(projectname))
+        self.upload_file(project_combo_file(projectname), json.dumps(acc))
 
     def upload_file(self, local_data, dest_path):
-        return self.s3service.upload_file(local_data, dest_path)
+        return self.file_service.upload_file(local_data, dest_path)
 
     def list_projects(self):
         def get_middle_section(key):
             return key.split('/')[1]
-        projects = set(self.s3service.project_files(None, PARE_DOWN_DIR, get_middle_section))
+        projects = set(self.file_service.project_files(None, PROJECT_META_DIR, get_middle_section))
         if '' in projects:
             projects.remove('')
         return sorted(projects)
 
     def get_file(self, fn):
-        return self.s3service.get_file(fn)
+        return self.file_service.get_file(fn)
 
     def get_json(self, s3_key):
         data = self.get_file(s3_key)
@@ -132,3 +124,9 @@ class Clasher(object):
             return json.loads(data)
         except Exception as ex:
             raise Exception('Error json parsing data from S3 %s' % (s3_key, ), ex)
+
+    def upload_logo(self, projectname, reader):
+        return self.file_service.upload_file(project_logo_file(projectname), reader.read())
+
+    def get_logo(self, projectname):
+        return self.get_file(project_logo_file(projectname))

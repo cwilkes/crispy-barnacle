@@ -34,7 +34,7 @@ Finally going to `/time` will show you charts for your projects.
 1. setup python virtual env
 ```
   virtualenv-2.7 venv 
-	. venv/bin/activate
+  . venv/bin/activate
 ```
 
 2. setup http://redis.io locally (for mac type "brew install redis")
@@ -54,7 +54,7 @@ Finally going to `/time` will show you charts for your projects.
 2. Create an application (first one is free)
 3. Logon locally: `heroku login`
 3. Install the rediscloud application `heroku addons:create rediscloud:30`
-4. edit your file .env with:
+4. Edit your file .env with:
 ```
   PYTHONPATH=.
   REDISCLOUD_URL=redis://localhost
@@ -74,8 +74,8 @@ If that works then setup a remote branch with the endpoint being your heroku ins
 
 This is easiest if you use (for local development):
 
-1. Docker toolbox https://www.docker.com/toolbox
-2. Virtualbox https://www.virtualbox.org
+1. [Docker toolbox](https://www.docker.com/toolbox)
+2. [Virtualbox](https://www.virtualbox.org)
 
 Commands to run:
 ```
@@ -91,4 +91,4 @@ To connect to the server use the IP address that's in the environment variable $
   echo $(echo $DOCKER_HOST | cut -d\/ -f3 | cut -d\:  -f1) docker | sudo tee -a /etc/hosts
 ```
 
-and now you can go to [http://docker]
+and now you can go to [http://docker](http://docker)

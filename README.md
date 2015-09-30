@@ -1,7 +1,7 @@
 # What is this project?
 
-At the [2015 AEC Hackathon in Seattle|http://aechackathon.com/aec-hackathon-seattle/] a team formed [see CREDITS](./CREDITS.md) 
-around frustration having to deal with [NavisWorks|http://www.autodesk.com/products/navisworks/overview]'s lack of triage ability
+At the [2015 AEC Hackathon in Seattle](http://aechackathon.com/aec-hackathon-seattle) a team formed ([see CREDITS](./CREDITS.md)) 
+around frustration having to deal with [NavisWorks](http://www.autodesk.com/products/navisworks/overview)'s lack of triage ability
 with thousands of clashes in a typical building.
 
 A "clash" is when two items occupy the same space that aren't allowed to -- for example a pipe running into a duct.  Pipes
@@ -11,13 +11,13 @@ does this group have today versus yesterday?"
 
 This is the backend side of the project that ingests the clash XML from NavisWorks, pulls out the relevant clashes, stores them,
 and has basic charting capabilities.  To get data into this system do an HTTP POST with a NavisWorks file or use
-[Mark Kinsman's send clash xml plugin|https://github.com/MarkKinsman/NavisworksExtensions] on github.
+[Mark Kinsman's send clash xml plugin](https://github.com/MarkKinsman/NavisworksExtensions) on github.
 
 
 # Using the project
 
 This was a weekend hack project so there's a definate lack of some niceties -- for example you have to upload an undocumented
-JSON file that describes the levels in a building [Here's a demo](web/static/clash_util.json) to the `/projects/<projectname>`
+JSON file that describes the levels in a building [Here's a demo file](web/static/clash_util.json) to the `/projects/<projectname>`
 endpoint even before you upload data.
 
 After that all you need to do is upload a file to the `/xml/<projectname>/<date>` endpoint.  The field name for the file is
@@ -73,9 +73,11 @@ If that works then setup a remote branch with the endpoint being your heroku ins
 # Docker instructions
 
 This is easiest if you use (for local development):
+
 1. Docker toolbox https://www.docker.com/toolbox
 2. Virtualbox https://www.virtualbox.org
 
+Commands to run:
 ```
   docker-machine create -d virtualbox dev
   docker-machine ls
@@ -89,4 +91,4 @@ To connect to the server use the IP address that's in the environment variable $
   echo $(echo $DOCKER_HOST | cut -d\/ -f3 | cut -d\:  -f1) docker | sudo tee -a /etc/hosts
 ```
 
-and now you can go to http://docker
+and now you can go to [http://docker]

@@ -1,0 +1,27 @@
+{
+  "levels":{
+    "UnderUnderground":"0",
+    "Underground":"21.9",
+    "Basement":"35.4",
+    "Level 1":"51.4",
+    "Level 2":"61.4",
+    "Level 3":"71.4",
+    "Level 4":"81.4",
+    "Level 5":"91.4",
+    "Level 6":"101.4",
+    "Level 7":"111.4",
+    "Level 8":"121.4",
+    "Level 9":"131.4",
+    "Level 10":"141.4",
+    "Level 11":"200"
+  },
+  "file_specs":[
+    {"name": "PC-00-COMP-TCM", "discipline":"MECH", "owner":"TCM"},
+    {"name": "PCH_CENTRAL_ELEC", "discipline":"ELEC","owner":"BERG"},
+    {"name": "PC-0B-FIRE-VIK", "discipline":"FIRE","owner":"VIK"},
+    {"name": "22563.bpg_Pearl Canopy Hotel_CENTRAL_ARCH", "discipline":"ARCH","owner":"ZGF"},
+    {"name": "PC-00-ELEC-BEC", "discipline":"ELEC","owner":"BERG"},
+    {"name": "PC-00-MECH-TCM", "discipline":"MECH","owner":"TCM"},
+    {"name": "PC-00-PLBG-TCM", "discipline":"PLBG","owner":"TCM"}
+  ]
+}

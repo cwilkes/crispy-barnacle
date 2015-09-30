@@ -1,5 +1,5 @@
 from flask import Flask, render_template, jsonify, redirect, request, Response
-from web.clasher import Clasher, COMBO_DIR
+from web.clasher import Clasher
 import os
 import logging
 

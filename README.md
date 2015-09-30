@@ -1,3 +1,33 @@
+# What is this project?
+
+At the [2015 AEC Hackathon in Seattle|http://aechackathon.com/aec-hackathon-seattle/] a team formed [see CREDITS](./CREDITS.md) 
+around frustration having to deal with [NavisWorks|http://www.autodesk.com/products/navisworks/overview]'s lack of triage ability
+with thousands of clashes in a typical building.
+
+A "clash" is when two items occupy the same space that aren't allowed to -- for example a pipe running into a duct.  Pipes
+running into walls may or may not be clashes.  NavisWorks offers some functionality to write rules to group things together
+however it is very time consuming.  Also it does not have reporting capabilities for questions as easy as "how many clashes
+does this group have today versus yesterday?"
+
+This is the backend side of the project that ingests the clash XML from NavisWorks, pulls out the relevant clashes, stores them,
+and has basic charting capabilities.  To get data into this system do an HTTP POST with a NavisWorks file or use
+[Mark Kinsman's send clash xml plugin|https://github.com/MarkKinsman/NavisworksExtensions] on github.
+
+
+# Using the project
+
+This was a weekend hack project so there's a definate lack of some niceties -- for example you have to upload an undocumented
+JSON file that describes the levels in a building [Here's a demo](web/static/clash_util.json) to the `/projects/<projectname>`
+endpoint even before you upload data.
+
+After that all you need to do is upload a file to the `/xml/<projectname>/<date>` endpoint.  The field name for the file is
+"file" and the date is in YYYY-MM-DD format.  Omitting the <date> will either give it today's date or one higher than the
+highest date for that project.
+
+Finally going to `/time` will show you charts for your projects.
+
+
+
 # Running locally
 
 

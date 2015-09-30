@@ -38,3 +38,25 @@ If that works then setup a remote branch with the endpoint being your heroku ins
   url = git@heroku.com:your-heroku-project.git
   fetch = +refs/heads/*:refs/remotes/herokuprod/*
 ```
+
+
+# Docker instructions
+
+This is easiest if you use (for local development):
+1. Docker toolbox https://www.docker.com/toolbox
+2. Virtualbox https://www.virtualbox.org
+
+```
+  docker-machine create -d virtualbox dev
+  docker-machine ls
+  eval $(docker-machine env dev)
+  docker-compose build
+  docker-compose up -d
+```
+
+To connect to the server use the IP address that's in the environment variable $DOCKER_HOST, or:
+```
+  echo $(echo $DOCKER_HOST | cut -d\/ -f3 | cut -d\:  -f1) docker | sudo tee -a /etc/hosts
+```
+
+and now you can go to http://docker

@@ -6,4 +6,5 @@ RUN pip install -r /requirements.txt
 
 EXPOSE 8000
 
-CMD ["gunicorn", "--log-level", "INFO", "--logger-class=simple", "--pythonpath", "web", "--access-logfile", "-", "--error-logfile", "-", "--log-file", "-", "url:app"]
+#CMD ["gunicorn", "--log-level", "INFO", "--logger-class=simple", "--pythonpath", "web", "--access-logfile", "-", "--error-logfile", "-", "--log-file", "-", "url:app"]
+CMD ["gunicorn", "--pythonpath", "web", "-b", ":8000", "url:app"]

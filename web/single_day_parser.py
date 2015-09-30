@@ -12,12 +12,13 @@ import os
 def parse_clash_util_json(util_file_str):
     data = json.loads(util_file_str) if type(util_file_str) == str else util_file_str
 
-    level_of_z = dict([(float(v), k) for (k, v) in data['levels'].iteritems()]) # invert the level->z
+    level_of_z = dict([(float(v), k) for k, v in data['levels'].iteritems()]) # invert the level->z
     file_details = dict()
-    for (i, obj) in enumerate(data['file_specs']):
-        file_details[obj['name']] = {'priority': i, 'discipline': obj['discipline'], 'owner': obj['owner']}
+    for i, obj in enumerate(data['file_specs']):
+        file_details[obj['name']] = dict(priority=i, discipline=obj['discipline'], owner=obj['owner'])
 
-    return (level_of_z, file_details)
+    return level_of_z, file_details
+
 
 class SingleDayParser(object):
     def __init__(self, util_file_str):
@@ -27,7 +28,7 @@ class SingleDayParser(object):
         try:
             ceiling = next(x[1] for x in enumerate(sorted(self.level_of_z.keys())) if x[1] > z)
         except StopIteration:
-            raise ValueError("z value %f higher than roof" % z)
+            raise ValueError("z value %f higher than roof" % (z, ))
         return self.level_of_z[ceiling]
 
     # Return the filename that has highest priority
@@ -38,8 +39,11 @@ class SingleDayParser(object):
             print >>sys.stderr, "File %s not found in clash_util" % (ex, )
             raise ex
 
+    def file_details(self, owner, subtopic):
+        return self.details_of_file[owner][subtopic]
+
     def clashes_of(self, clash_xml, date):
-        acc = defaultdict(lambda : defaultdict(int))
+        acc = defaultdict(lambda: defaultdict(int))
         doc = ET.parse(clash_xml)
         for item in doc.iterfind('batchtest/clashtests/clashtest/clashresults/clashresult'):
             z_coord = float(item.find('clashpoint/pos3f').attrib['z'])
@@ -51,14 +55,14 @@ class SingleDayParser(object):
             acc['Total clashes']['Total Number of Clashes'] += 1
             acc['Level'][level] += 1
             for owning_file in owning_files:
-                acc['Owner'][self.details_of_file[owning_file]['owner']] += 1
-                acc['Discipline'][self.details_of_file[owning_file]['discipline']] += 1
-            acc['Primary owner'][self.details_of_file[primary_owner]['owner']] += 1
-            acc['Primary discipline'][self.details_of_file[primary_owner]['discipline']] += 1
+                acc['Owner'][self.file_details(owning_file, 'owner')] += 1
+                acc['Discipline'][self.file_details(owning_file, 'discipline')] += 1
+            acc['Primary owner'][self.file_details(primary_owner, 'owner')] += 1
+            acc['Primary discipline'][self.file_details(primary_owner, 'discipline')] += 1
 
         clashes = dict()
-        for (grouping, group_obj) in acc.iteritems():
-            clashes[grouping] = [{'group': k, 'date': date, 'n_clashes': v} for (k,v) in group_obj.iteritems()]
+        for grouping, group_obj in acc.iteritems():
+            clashes[grouping] = [dict(group=k, date=date, n_clashes=v) for k, v in group_obj.iteritems()]
         return clashes
 
 def main():

@@ -8,10 +8,8 @@ from dateutil.relativedelta import relativedelta
 from web.single_day_parser import SingleDayParser
 import simplejson as json
 from compile_days import combine_readers
-import redis
-import urlparse
+from web.storage import RedisHelper
 
-S3_BUCKET_NAME = 'navishack'
 PROJECT_META_DIR = 'project'
 PARE_DOWN_DIR = 'single_json'
 COMBO_DIR = 'combo_json'

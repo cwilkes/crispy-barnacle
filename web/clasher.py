@@ -33,42 +33,6 @@ def project_logo_file(projectname):
     return os.path.join(PROJECT_META_DIR, projectname, 'logo.jpg')
 
 
-def blank(target):
-    return '' if target is None else target
-
-class RedisHelper(object):
-    def __init__(self, input_url=None):
-        if input_url:
-            pass
-        else:
-            if 'REDISCLOUD_URL' in os.environ:
-                input_url = os.environ.get('REDISCLOUD_URL')
-            else:
-                input_url = 'redis://redis:6379'
-        url = urlparse.urlparse(input_url)
-        self.r = redis.Redis(host=url.hostname, port=url.port, password=url.password)
-
-    def all_files(self, prefix=None):
-        if prefix is None:
-            return self.r.keys()
-        else:
-            return self.r.keys(os.path.join(prefix, '*'))
-
-    def project_files(self, projectname, category, match_func=None):
-        for fn in self.all_files(os.path.join(blank(category), blank(projectname))):
-            if match_func:
-                ret = match_func(fn)
-                if ret is not None:
-                    yield ret
-            else:
-                yield fn
-
-    def upload_file(self, dest_path, value):
-        self.r.set(dest_path, value)
-        return dest_path
-
-    def get_file(self, fn):
-        return self.r.get(fn)
 
 
 def date_matcher_func(fn):

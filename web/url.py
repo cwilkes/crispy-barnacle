@@ -17,7 +17,7 @@ clasher = Clasher(app.logger)
 
 @app.route('/')
 def index():
-    return redirect('/list')
+    return redirect('/time')
 
 
 @app.route('/projects')

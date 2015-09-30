@@ -1,0 +1,11 @@
+web:
+  restart: always
+  build: .
+  ports:
+    - "80:8000"
+  links:
+    - redis
+
+redis:
+  restart: always
+  image: redis:latest

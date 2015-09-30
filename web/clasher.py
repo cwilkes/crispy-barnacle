@@ -38,7 +38,14 @@ def blank(target):
 
 class RedisHelper(object):
     def __init__(self, input_url=None):
-        url = urlparse.urlparse(input_url if input_url else os.environ.get('REDISCLOUD_URL'))
+        if input_url:
+            pass
+        else:
+            if 'REDISCLOUD_URL' in os.environ:
+                input_url = os.environ.get('REDISCLOUD_URL')
+            else:
+                input_url = 'redis://redis:6379'
+        url = urlparse.urlparse(input_url)
         self.r = redis.Redis(host=url.hostname, port=url.port, password=url.password)
 
     def all_files(self, prefix=None):
